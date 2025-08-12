@@ -1,0 +1,601 @@
+/* static/style.css */
+
+body {
+    margin: 0;
+    overflow: hidden;
+    cursor: pointer;
+    font-family: sans-serif;
+}
+
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 0;
+    display: block;
+}
+
+#label-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.health-bar-container {
+    width: 50px;
+    height: 6px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 1px solid #333;
+    border-radius: 2px;
+}
+
+.health-bar-fill {
+    height: 100%;
+    background-color: #dc3545;
+    width: 100%;
+    transition: width 0.2s ease-in-out;
+}
+
+.item-label {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    text-shadow: 1px 1px 2px black;
+}
+
+/* Container for damage numbers */
+#damage-number-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Make it unclickable */
+    z-index: 3; /* Above crosshair */
+}
+
+/* Damage Number Styling (for screen-space) */
+.damage-number {
+    position: absolute; /* Crucial for positioning */
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 1px 1px 3px black;
+    pointer-events: none;
+    animation: floatUpAndFade 1s forwards;
+    transform: translateX(-50%); /* Center the number horizontally */
+}
+
+.damage-number.headshot {
+    color: #ffd700;
+    font-size: 24px;
+}
+
+@keyframes floatUpAndFade {
+    from {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+    to {
+        opacity: 0;
+        transform: translate(-50%, -40px); /* Move up 40px */
+    }
+}
+
+.crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    color: white;
+    text-shadow: 1px 1px 2px black;
+    pointer-events: none;
+    z-index: 2;
+}
+
+#hit-marker {
+    color: #ff4d4d; /* สีแดงสด */
+    font-size: 24px;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.1s ease-out;
+}
+
+/* HUD Layout */
+/* ======================================== */
+/* === ลบโค้ดส่วนเก่าตั้งแต่ .hud ถึง #highscore === */
+/* ======================================== */
+
+/* แล้วแทนที่ด้วยโค้ดชุดใหม่นี้ทั้งหมด */
+
+/* HUD Layout - NEW AND IMPROVED */
+.hud {
+    position: absolute;
+    top: 20px;
+    color: #f0f0f0; /* ปรับเป็นสีขาวนวล อ่านง่ายขึ้น */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* เพิ่มเงาให้เข้มขึ้น */
+    pointer-events: none;
+    z-index: 2;
+    padding: 12px 16px;
+    background-color: rgba(0, 0, 0, 0.35); /* ทำให้พื้นหลังเข้มขึ้นเล็กน้อย */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* เพิ่มขอบบางๆ */
+    border-radius: 8px;
+    line-height: 1.5; /* เพิ่มระยะห่างระหว่างบรรทัด */
+    min-width: 220px; /* กำหนดความกว้างขั้นต่ำให้เท่ากัน */
+}
+
+#hud-top-left {
+    left: 20px;
+}
+
+#hud-top-right {
+    right: 20px;
+    text-align: right;
+}
+
+/* --- จัดลำดับความสำคัญของข้อมูล --- */
+
+/* ข้อมูลสำคัญที่สุด: HP และ Ammo */
+#health,
+#ammo {
+    font-size: 26px; /* ใหญ่และเด่นที่สุด */
+    font-weight: 700; /* ตัวหนา */
+}
+
+/* ข้อมูลสำคัญรองลงมา: Score และชื่ออาวุธ */
+#score,
+#weapon {
+    font-size: 22px;
+}
+
+#weapon {
+    font-weight: 700;
+    margin-bottom: 4px; /* ปรับระยะห่างเล็กน้อย */
+}
+
+/* ข้อมูลสถานะและทรัพยากร */
+#wave,
+#kills {
+    font-size: 18px;
+    color: #cccccc; /* ทำให้สีดรอปลงเล็กน้อย */
+}
+
+/* ทำให้จำนวนระเบิดเด่นขึ้นด้วยสีเขียวที่สดใส */
+#grenades {
+    font-size: 20px;
+    font-weight: bold;
+    color: #a2ff99; /* สีเขียวมิ้นท์ที่ดูทันสมัย */
+}
+
+/* ทำให้จำนวนศัตรูเป็นเหมือนการ "เตือน" ด้วยสีเหลือง */
+#enemy-count {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffdd00; /* สีเหลืองทอง */
+}
+
+/* ข้อมูลที่ไม่สำคัญมากระหว่างเล่น: High Score */
+#highscore {
+    font-size: 16px;
+    color: #aaaaaa; /* สีเทา */
+    opacity: 0.8;
+    margin-top: 8px;
+}
+
+
+/* ======================================== */
+/* === โค้ดส่วนอื่นๆ ที่เหลือคงเดิม === */
+/* ======================================== */
+
+#paused-overlay,
+#center-message,
+#gameover-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-family: sans-serif;
+    text-shadow: 2px 2px 8px black;
+    z-index: 4;
+    text-align: center;
+    pointer-events: none;
+}
+
+#paused-overlay {
+    font-size: 42px;
+}
+
+#center-message {
+    font-size: 48px;
+}
+
+#gameover-overlay {
+    font-size: 56px;
+}
+
+.blurred {
+    filter: blur(6px);
+}
+
+#debug-pos {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    color: #0f0;
+    font-family: monospace;
+    font-size: 14px;
+    text-shadow: 1px 1px 2px #000;
+    z-index: 3;
+}
+
+#damage-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(255, 0, 0, 0.0);
+    pointer-events: none;
+    transition: background 0.2s ease;
+    z-index: 1;
+}
+
+#start-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+}
+
+.menu-content {
+    background: rgba(30, 30, 30, 0.85);
+    padding: 48px 64px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px #0008;
+    text-align: center;
+}
+
+#start-btn {
+    font-size: 2rem;
+    padding: 12px 48px;
+    border-radius: 8px;
+    border: none;
+    background: #4CAF50;
+    color: white;
+    margin-top: 24px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#start-btn:hover {
+    background: #388e3c;
+}
+
+#menu-highscore {
+    color: #fff;
+    margin-top: 18px;
+    font-size: 1.2rem;
+}
+
+.menu-content h1 {
+    color: white;
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+#stamina-container {
+    width: 150px;
+    height: 12px;
+    background-color: rgba(50, 50, 50, 0.7);
+    border: 1px solid #333;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+#stamina-bar {
+    width: 100%;
+    height: 100%;
+    background-color: #ffd700;
+    border-radius: 3px;
+    transition: width 0.1s linear;
+}
+
+/* START: เพิ่มสไตล์สำหรับคู่มือการเล่น */
+#how-to-play-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    font-family: sans-serif;
+    color: #eee;
+}
+
+.how-to-play-content {
+    background: rgba(20, 20, 25, 0.9);
+    padding: 32px;
+    border-radius: 12px;
+    border: 1px solid #444;
+    box-shadow: 0 10px 40px #000a;
+    width: 95%;
+    max-width: 1100px;
+    text-align: center;
+}
+
+.how-to-play-content h1 {
+    font-size: 2.5rem;
+    color: #4CAF50;
+    margin-bottom: 24px;
+}
+
+.guide-container {
+    display: flex;
+    gap: 24px;
+    text-align: left;
+    margin-bottom: 32px;
+}
+
+.guide-section {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 8px;
+    flex: 1;
+}
+
+.guide-section h3 {
+    font-size: 1.4rem;
+    color: #87ceeb;
+    margin-top: 0;
+    border-bottom: 1px solid #555;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+}
+
+.guide-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.guide-section li {
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.guide-section kbd {
+    background-color: #555;
+    border-radius: 3px;
+    border: 1px solid #777;
+    padding: 2px 6px;
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+.swatch {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border-radius: 3px;
+    margin-right: 8px;
+    vertical-align: middle;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+#continue-to-game-btn {
+    font-size: 1.8rem;
+    padding: 16px 64px;
+    border-radius: 8px;
+    border: none;
+    background: #c62828;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#continue-to-game-btn:hover {
+    background: #d32f2f;
+}
+/* Shop Styling - Horizontal Layout */
+#shop-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    font-family: sans-serif;
+}
+
+.shop-content {
+    background: rgba(20, 20, 25, 0.9);
+    padding: 32px;
+    border-radius: 12px;
+    border: 1px solid #444;
+    box-shadow: 0 10px 40px #000a;
+    text-align: center;
+    color: #eee;
+    width: 95%;
+    max-width: 1200px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.shop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.shop-header h2 {
+    font-size: 2.2rem;
+    color: #4CAF50;
+    margin: 0;
+    text-shadow: 1px 1px 3px #000;
+}
+
+.shop-money {
+    font-size: 1.4rem;
+    color: #ffd700;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px 16px;
+    border-radius: 6px;
+}
+
+.shop-items {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+/* Consumables Row */
+.consumables-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Permanent Upgrades Grid (2 rows) */
+.permanent-upgrades {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    justify-content: center;
+}
+
+.shop-section-title {
+    color: #aaa;
+    border-bottom: 1px solid #555;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    font-size: 1.3rem;
+    text-align: center;
+}
+
+.shop-item {
+    background: #333;
+    border: 1px solid #555;
+    color: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 80px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.shop-item:hover:not(:disabled) {
+    background: #444;
+    transform: translateY(-2px);
+}
+
+.shop-item:disabled {
+    background: #282828;
+    color: #666;
+    cursor: not-allowed;
+    border-color: #444;
+}
+
+.shop-item .item-name {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.shop-item .item-cost {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ffd700;
+}
+
+.shop-item.permanent .item-name {
+    color: #87ceeb;
+}
+
+#start-next-wave-btn {
+    font-size: 1.8rem;
+    padding: 16px 64px;
+    border-radius: 8px;
+    border: none;
+    background: #c62828;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+    margin-top: 16px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+#start-next-wave-btn:hover {
+    background: #d32f2f;
+}
+#start-next-wave-btn {
+    font-size: 1.8rem;
+    padding: 16px 64px;
+    border-radius: 8px;
+    border: none;
+    background: #c62828;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+    margin-top: 16px;
+}
+
+#start-next-wave-btn:hover {
+    background: #d32f2f;
+}
+
+/* Hide HUD elements when shop is active */
+body.shop-active .hud,
+body.shop-active #status,
+body.shop-active .crosshair,
+body.shop-active #debug-pos,
+body.shop-active #label-container,
+body.shop-active #damage-overlay,
+body.shop-active #damage-number-container {
+    display: none !important;
+}
+
+body.menu-active #shop-overlay {
+    display: none !important;
+}
