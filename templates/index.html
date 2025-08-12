@@ -1,0 +1,176 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เกมยิง 3D เอาชีวิตรอด</title>
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+
+<body>
+    <!-- Container for Labels (Health Bars, Item Names) -->
+    <div id="label-container"></div>
+    <!-- Container for screen-space damage numbers -->
+    <div id="damage-number-container"></div>
+
+    <!-- HUD now organized into containers -->
+    <div class="hud" id="hud-top-left">
+        <div id="score">คะแนน: 0</div>
+        <div id="health">พลังชีวิต: 100 / 100</div>
+        <div id="stamina-container">
+            <div id="stamina-bar"></div>
+        </div>
+        <div id="wave">เวฟ: 1</div>
+        <div id="kills">สังหาร: 0</div>
+        <div id="enemy-count">ศัตรู: 0M 0S 0R 0H 0B</div>
+        <div id="highscore">คะแนนสูงสุด: 0</div>
+    </div>
+    <div class="hud" id="hud-top-right">
+        <div id="weapon">ปืนพก</div>
+        <div id="ammo">กระสุน: 12/120</div>
+        <div id="grenades">ระเบิด: 3</div>
+    </div>
+
+    <div id="status"></div>
+    <div id="damage-overlay"></div>
+    <div id="paused-overlay" style="display:none;">หยุดชั่วคราว - กด P เพื่อเล่นต่อ</div>
+    <div id="center-message" style="display:none;"></div>
+    <div id="gameover-overlay" style="display:none;">เกมจบแล้ว<br />กด F เพื่อเริ่มใหม่</div>
+    <div id="debug-pos"></div>
+
+    <div class="crosshair">+</div>
+    <div id="hit-marker" class="crosshair">X</div>
+
+    <div id="start-menu" style="display: flex;">
+        <div class="menu-content">
+            <h1>เกมยิง 3D เอาชีวิตรอด</h1>
+            <button id="start-btn">เริ่มเกม</button>
+            <div id="menu-highscore"></div>
+        </div>
+    </div>
+
+    <div id="how-to-play-overlay" style="display: none;">
+        <div class="how-to-play-content">
+            <h1>คู่มือการเล่น</h1>
+            <div class="guide-container">
+                <div class="guide-section">
+                    <h3>การควบคุม (Controls)</h3>
+                    <ul>
+                        <li><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> - เคลื่อนที่</li>
+                        <li><kbd>Shift</kbd> - วิ่ง (ใช้ Stamina)</li>
+                        <li><kbd>คลิกซ้าย</kbd> - ยิงปืน</li>
+                        <li><kbd>R</kbd> - รีโหลดกระสุน</li>
+                        <li><kbd>V</kbd> - โจมตีระยะประชิด</li>
+                        <li><kbd>G</kbd> - ขว้างระเบิด</li>
+                        <li><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> - เปลี่ยนอาวุธ (ปืนพก, ปืนไรเฟิล, ลูกซอง)</li>
+                    </ul>
+                </div>
+                <div class="guide-section">
+                    <h3>อาวุธ (Weapons)</h3>
+                    <ul>
+                        <li><strong>ปืนพก:</strong> ปืนพกพื้นฐาน สมดุลทุกด้าน</li>
+                        <li><strong>ปืนไรเฟิล:</strong> ปืนกลเบา ยิงเร็วแต่ดาเมจไม่สูง</li>
+                        <li><strong>ลูกซอง:</strong> ปืนลูกซอง รุนแรงในระยะใกล้</li>
+                    </ul>
+                    <h3>ไอเทม (Pickups)</h3>
+                     <ul>
+                        <li><span class="swatch" style="background-color: #ff0000;"></span> <strong>กล่องพยาบาล:</strong> ฟื้นฟูพลังชีวิต</li>
+                        <li><span class="swatch" style="background-color: #a52a2a;"></span> <strong>กระสุนเต็ม:</strong> เติมกระสุนสำรองเต็ม</li>
+                        <li><span class="swatch" style="background-color: #9400d3;"></span> <strong>เพิ่มพลังโจมตี:</strong> เพิ่มความเสียหาย 2 เท่าชั่วคราว</li>
+                    </ul>
+                </div>
+                <div class="guide-section">
+                    <h3>ศัตรู (Enemies)</h3>
+                    <ul>
+                        <li><span class="swatch" style="background-color: #ff0000;"></span> <strong>Melee:</strong> วิ่งเข้าโจมตีระยะใกล้</li>
+                        <li><span class="swatch" style="background-color: #cc8400;"></span> <strong>Minion:</strong> ตัวเล็ก วิ่งเร็ว แต่เปราะบาง</li>
+                        <li><span class="swatch" style="background-color: #0066ff;"></span> <strong>Ranged:</strong> โจมตีจากระยะไกล</li>
+                        <li><span class="swatch" style="background-color: #90ee90;"></span> <strong>Healer:</strong> รักษาเพื่อนร่วมทีม หลบอยู่แนวหลัง</li>
+                        <li><span class="swatch" style="background-color: #9900ff;"></span> <strong>Boss:</strong> ถึกทน โจมตีรุนแรง มีสกิลวงกว้าง</li>
+                    </ul>
+                </div>
+            </div>
+            <button id="continue-to-game-btn">เข้าสู่สนามรบ!</button>
+        </div>
+    </div>
+
+    <!-- Upgrade Shop UI with Columns -->
+    <div id="shop-overlay" style="display: none;">
+        <div class="shop-content">
+            <div class="shop-header">
+                <h2>ร้านค้าอัปเกรด - จบเวฟที่ <span id="shop-wave-number">1</span></h2>
+                <p class="shop-money">เงิน: $<span id="shop-money-amount">0</span></p>
+            </div>
+
+            <div class="shop-items">
+                <!-- Consumables Section (Single Row) -->
+                <div>
+                    <h3 class="shop-section-title">ไอเทมใช้แล้วหมดไป</h3>
+                    <div class="consumables-row">
+                        <button class="shop-item" id="buy-health-btn">
+                            <span class="item-name">ฟื้นฟูพลังชีวิต 50%</span>
+                            <span class="item-cost">$250</span>
+                        </button>
+                        <button class="shop-item" id="buy-ammo-btn">
+                            <span class="item-name">เติมกระสุนเต็ม</span>
+                            <span class="item-cost">$400</span>
+                        </button>
+                        <button class="shop-item" id="buy-grenade-btn">
+                            <span class="item-name">เพิ่มระเบิด 1 ลูก</span>
+                            <span class="item-cost">$500</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Permanent Upgrades Section (Grid Layout) -->
+                <div>
+                    <h3 class="shop-section-title">อัปเกรดถาวร</h3>
+                    <div class="permanent-upgrades">
+                        <button class="shop-item permanent" id="upgrade-damage-btn">
+                            <span class="item-name">อัปเกรดความเสียหาย (+10%)</span>
+                            <span class="item-cost" id="upgrade-damage-cost">$750</span>
+                        </button>
+                        <button class="shop-item permanent" id="upgrade-hp-btn">
+                            <span class="item-name">อัปเกรดพลังชีวิตสูงสุด (+20)</span>
+                            <span class="item-cost" id="upgrade-hp-cost">$600</span>
+                        </button>
+                        <button class="shop-item permanent" id="buy-scope-btn">
+                            <span class="item-name">สโคป (เพิ่มความแม่นยำ)</span>
+                            <span class="item-cost">$1200</span>
+                        </button>
+                        <button class="shop-item permanent" id="buy-extmag-btn">
+                            <span class="item-name">แม็กกาซีนเสริม (+25% กระสุน)</span>
+                            <span class="item-cost">$1500</span>
+                        </button>
+                        <button class="shop-item permanent" id="buy-grip-btn">
+                            <span class="item-name">ด้ามจับ (รีโหลดเร็วขึ้น)</span>
+                            <span class="item-cost">$1000</span>
+                        </button>
+                        <button class="shop-item permanent" id="buy-frost-btn">
+                            <span class="item-name">กระสุนน้ำแข็ง (โอกาสทำให้ช้าลง)</span>
+                            <span class="item-cost">$2000</span>
+                        </button>
+                        <button class="shop-item permanent" id="buy-ap-btn">
+                            <span class="item-name">กระสุนเจาะเกราะ (ยิงทะลุ)</span>
+                            <span class="item-cost">$2500</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="start-next-wave-btn">เริ่มเวฟถัดไป</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS2DRenderer.js"></script>
+    <!-- <script src="{{ url_for('static', filename='main.js') }}"></script> -->
+    <script src="../static/main.js"></script>
+</body>
+
+</html>
